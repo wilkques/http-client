@@ -136,16 +136,21 @@ class Curl
         return curl_error($this->getCurlHandle());
     }
 
+    /**
+     * Closes a cURL session and frees all resources. The cURL handle, ch, is also deleted.
+     */
+    public function close()
+    {
+        curl_close($this->getCurlHandle());
+    }
+
     public function __call($method, $arguments)
     {
         return $this->getCurlHttpClient()->$method(...$arguments);
     }
 
-    /**
-     * Closes a cURL session and frees all resources. The cURL handle, ch, is also deleted.
-     */
     public function __destruct()
     {
-        // curl_close($this->getCurlHandle());
+        // 
     }
 }

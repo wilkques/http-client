@@ -174,7 +174,7 @@ class CurlHTTPClient implements HTTPClient
      */
     public function withHeaders(array $headers)
     {
-        $this->headers += $headers;
+        $this->headers = array_replace_recursive($this->headers, $headers);
 
         return $this;
     }
@@ -387,8 +387,6 @@ class CurlHTTPClient implements HTTPClient
      */
     protected function execCurl(string $url, array $options)
     {
-        // print_r($options);die;
-
         $this->setUrl($url)->init()->setoptArray($options);
 
         $result = $this->exec();
@@ -454,5 +452,6 @@ class CurlHTTPClient implements HTTPClient
     public function __destruct()
     {
         $this->fileClose();
+        $this->close();
     }
 }
