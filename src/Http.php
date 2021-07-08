@@ -19,9 +19,15 @@ use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
  */
 class Http
 {
+    /** @var CurlHTTPClient */
+    protected $curlHttpClient;
+
+    /**
+     * @return CurlHTTPClient
+     */
     public function newCurlHttpClient()
     {
-        return new CurlHTTPClient;
+        return $this->curlHttpClient = $this->curlHttpClient ?? new CurlHTTPClient;
     }
 
     public function __call($method, $arguments)

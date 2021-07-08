@@ -362,21 +362,13 @@ class CurlHTTPClient implements HTTPClient
      */
     private function sendRequest(string $method, string $url, $reqBody = null)
     {
-        $result = $this->execCurl($url, $this->options(
-            $method,
-            $reqBody
-        )->getOptions());
-
-        [
-            'http_code'     => $httpStatus,
-            'header_size'   => $responseHeaderSize
-        ] = $this->getinfo();
-
-        $responseHeaders = $this->responseHeaders($result, $responseHeaderSize);
-
-        $body = $this->body($result, $responseHeaderSize);
-
-        return new Response($httpStatus, $body, $responseHeaders);
+        return new Response(
+            $this->execCurl($url, $this->options(
+                $method,
+                $reqBody
+            )->getOptions()),
+            $this->getinfo()
+        );
     }
 
     /**
@@ -391,7 +383,7 @@ class CurlHTTPClient implements HTTPClient
 
         $result = $this->exec();
 
-        if ($this->errno()) throw new CurlExecutionException($this->error());
+        if ($this->errno()) throw new CurlExecutionException($this->error(), $this->errno());
 
         return $result;
     }
@@ -404,31 +396,6 @@ class CurlHTTPClient implements HTTPClient
     protected function additionalHeader(array $additionalHeader)
     {
         return array_merge($this->getToken(), $additionalHeader);
-    }
-
-    /**
-     * @return array
-     */
-    protected function responseHeaders($result, $responseHeaderSize)
-    {
-        $responseHeaderStr = substr($result, 0, $responseHeaderSize);
-        $responseHeaders = [];
-        foreach (explode("\r\n", $responseHeaderStr) as $responseHeader) {
-            $kv = explode(':', $responseHeader, 2);
-            if (count($kv) === 2) {
-                $responseHeaders[$kv[0]] = trim($kv[1]);
-            }
-        }
-
-        return $responseHeaders;
-    }
-
-    /**
-     * @return string|false
-     */
-    protected function body($result, $responseHeaderSize)
-    {
-        return substr($result, $responseHeaderSize);
     }
 
     /**

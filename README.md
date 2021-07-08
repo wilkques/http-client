@@ -9,31 +9,49 @@ composer require wilkques/http-client
 // request
 $response = Http::get('<url>', [ ... ]);
 
-Http::withHeaders([ ... ]) // add header
+$response = Http::withHeaders([ ... ]) // add header
 
-Http::asForm() // add header application/x-www-form-urlencoded
+$response = Http::asForm() // add header application/x-www-form-urlencoded
 
-Http::asJson() // add header application/json
+$response = Http::asJson() // add header application/json
 
-Http::attach('<file path>') // add file
+$response = Http::attach('<file path>') // add file
 
-Http::post('<url>', [ ... ]) // method post
+$response = Http::post('<url>', [ ... ]) // method post
 
-Http::put('<url>', [ ... ]) // method put
+$response = Http::put('<url>', [ ... ]) // method put
 
-Http::patch('<url>', [ ... ]) // method patch
+$response = Http::patch('<url>', [ ... ]) // method patch
 
-Http::delete('<url>', [ ... ]) // method delete
+$response = Http::delete('<url>', [ ... ]) // method delete
 
 
 // response
-$response->getHTTPStatus(); // get http status code
+$response->status(); // get http status code
 
-$response->getRawBody(); // get body
+$response->body(); // get body
 
-$response->getJSONDecodedBody(); // get json_decode body
+$response->json(); // get json_decode body
 
-$response->getHeaders(); //get headers
+$response->headers(); //get headers
 
-$response->getHeader('<key>'); // get header
+$response->header('<key>'); // get header
+
+$response->ok(); // bool
+
+$response->redirect(); // bool
+
+$response->successful(); // bool
+
+$response->failed(); // bool
+
+$response->clientError(); // bool
+
+$response->serverError(); // bool
+
+$response->throw(); // throw exception
+
+$response->throw(function ($response, $exception) {
+    // code
+});
 ```
