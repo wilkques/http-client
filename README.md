@@ -1,4 +1,8 @@
 # Http Client
+
+[![Latest Stable Version](https://poser.pugx.org/wilkques/http-client/v/stable)](https://packagist.org/packages/wilkques/http-client)
+[![License](https://poser.pugx.org/wilkques/http-client/license)](https://packagist.org/packages/wilkques/http-client)
+
 ## How to start
 ````
 composer require wilkques/http-client
