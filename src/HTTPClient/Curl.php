@@ -11,9 +11,12 @@ class Curl
     private $curlHandle;
     /** @var string */
     private $url;
-
+    /** @var CurlHTTPClient */
     private $curlHTTPClient;
 
+    /**
+     * @param string $url
+     */
     public function __construct(string $url = '')
     {
         $this->setUrl($url);
@@ -147,10 +150,5 @@ class Curl
     public function __call($method, $arguments)
     {
         return $this->getCurlHttpClient()->$method(...$arguments);
-    }
-
-    public function __destruct()
-    {
-        // 
     }
 }
