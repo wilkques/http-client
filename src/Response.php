@@ -69,9 +69,12 @@ class Response
     }
 
     /**
+     * @param string $result
+     * @param integer $responseHeaderSize
+     * 
      * @return array
      */
-    protected function responseHeaders($result, $responseHeaderSize)
+    protected function responseHeaders(string $result, int $responseHeaderSize)
     {
         $responseHeaderStr = substr($result, 0, $responseHeaderSize);
         $responseHeaders = [];
@@ -86,9 +89,12 @@ class Response
     }
 
     /**
+     * @param string $result
+     * @param integer $responseHeaderSize
+     * 
      * @return string|false
      */
-    protected function bodyHandle($result, $responseHeaderSize)
+    protected function bodyHandle(string $result, int $responseHeaderSize)
     {
         return substr($result, $responseHeaderSize);
     }
