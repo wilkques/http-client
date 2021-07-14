@@ -23,8 +23,8 @@ class Response implements JsonSerializable, ArrayAccess
     /**
      * Response constructor.
      *
-     * @param string $result
-     * @param array $info
+     * @param string|null $result
+     * @param array|null $info
      */
     public function __construct(string $result = null, array $info = null)
     {
@@ -52,7 +52,7 @@ class Response implements JsonSerializable, ArrayAccess
     }
 
     /**
-     * @param string $result
+     * @param string|null $result
      * 
      * @return static
      */
@@ -110,7 +110,7 @@ class Response implements JsonSerializable, ArrayAccess
     }
 
     /**
-     * @param callable $callable
+     * @param callable|null $callable
      * 
      * @throws RequestException
      * 

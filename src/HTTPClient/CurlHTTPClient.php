@@ -96,7 +96,7 @@ class CurlHTTPClient implements HTTPClient
      *
      * @param string $url Request URL.
      * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array|null $query
      * 
      * @return Response Response of API request.
      * 
@@ -112,7 +112,7 @@ class CurlHTTPClient implements HTTPClient
      *
      * @param string $url Request URL.
      * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array|null $query
      * 
      * @return Response Response of API request.
      * 
@@ -129,7 +129,7 @@ class CurlHTTPClient implements HTTPClient
      *
      * @param string $url Request URL.
      * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array|null $query
      * 
      * @return Response Response of API request.
      * 
@@ -144,7 +144,7 @@ class CurlHTTPClient implements HTTPClient
      * Sends DELETE request to API.
      *
      * @param string $url Request URL.
-     * @param array $query
+     * @param array|null $query
      * 
      * @return Response Response of API request.
      * 
@@ -298,7 +298,7 @@ class CurlHTTPClient implements HTTPClient
     }
 
     /**
-     * @param string $filePath
+     * @param string|null $filePath
      * 
      * @return static
      */
