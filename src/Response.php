@@ -118,7 +118,7 @@ class Response implements JsonSerializable, ArrayAccess
     {
         if ($this->failed()) {
             if ($callable && is_callable($callable)) {
-                $callable($this, $this->getThrows());
+                throw $callable($this, $this->getThrows());
             }
 
             throw new RequestException($this);
