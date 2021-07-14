@@ -112,6 +112,8 @@ class Response implements JsonSerializable, ArrayAccess
     /**
      * @param callable $callable
      * 
+     * @throws RequestException
+     * 
      * @return $this
      */
     public function throw(callable $callable = null)
@@ -121,7 +123,7 @@ class Response implements JsonSerializable, ArrayAccess
                 throw $callable($this, $this->getThrows());
             }
 
-            throw new RequestException($this);
+            throw $this->getThrows();
         }
 
         return $this;
