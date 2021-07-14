@@ -11,11 +11,11 @@ use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
  * @method static withToken(string $token, string $type = 'Bearer') add Authorization token
  * @method static attach(string $filePath = null) file upload
  * @method static contentType(string $contentType) custom Content-Type
- * @method response get(string $url, array $data = []) http method get
- * @method response post(string $url, array $data, array $query = null) http method post
- * @method response put(string $url, array $data = [], array $query = null)
- * @method response patch(string $url, array $data = [], array $query = null)
- * @method response delete(string $url, array $query = null)
+ * @method Response get(string $url, array $data = []) http method get
+ * @method Response post(string $url, array $data, array $query = null) http method post
+ * @method Response put(string $url, array $data = [], array $query = null)
+ * @method Response patch(string $url, array $data = [], array $query = null)
+ * @method Response delete(string $url, array $query = null)
  */
 class Http
 {
