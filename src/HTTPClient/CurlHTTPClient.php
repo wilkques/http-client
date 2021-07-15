@@ -2,14 +2,9 @@
 
 namespace Wilkques\HttpClient\HTTPClient;
 
-use Wilkques\HttpClient\Exception\CurlExecutionException;
+use Wilkques\HttpClient\Exceptions\CurlExecutionException;
 use Wilkques\HttpClient\Response;
 
-/**
- * Class CurlHTTPClient.
- *
- * A HTTPClient that uses cURL.
- */
 class CurlHTTPClient implements HTTPClient
 {
     /** @var array */
@@ -77,7 +72,7 @@ class CurlHTTPClient implements HTTPClient
      * Sends GET request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body
+     * @param array[] $data Request body
      * 
      * @return Response Response of API request.
      * 
@@ -95,7 +90,7 @@ class CurlHTTPClient implements HTTPClient
      * Sends PUT request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
+     * @param array[] $data Request body or resource path.
      * @param array|null $query
      * 
      * @return Response Response of API request.
@@ -111,7 +106,7 @@ class CurlHTTPClient implements HTTPClient
      * Sends PATCH request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
+     * @param array[] $data Request body or resource path.
      * @param array|null $query
      * 
      * @return Response Response of API request.
@@ -128,14 +123,14 @@ class CurlHTTPClient implements HTTPClient
      * Sends POST request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
+     * @param array[] $data Request body or resource path.
      * @param array|null $query
      * 
      * @return Response Response of API request.
      * 
      * @throws CurlExecutionException
      */
-    public function post(string $url, array $data, array $query = null)
+    public function post(string $url, array $data = [], array $query = null)
     {
         return $this->methodPost()->sendRequest('POST', $this->urlBuilder($url, $query), $data);
     }
@@ -144,15 +139,15 @@ class CurlHTTPClient implements HTTPClient
      * Sends DELETE request to API.
      *
      * @param string $url Request URL.
-     * @param array|null $query
+     * @param array[] $data
      * 
      * @return Response Response of API request.
      * 
      * @throws CurlExecutionException
      */
-    public function delete(string $url, array $query = null)
+    public function delete(string $url, array $data = [])
     {
-        return $this->sendRequest('DELETE', $this->urlBuilder($url, $query), []);
+        return $this->sendRequest('DELETE', $this->urlBuilder($url, $data), []);
     }
 
     /**
@@ -406,11 +401,23 @@ class CurlHTTPClient implements HTTPClient
         return $this->getCurl() ?: $this->setCurl(new Curl)->setCurlHttpClient($this);
     }
 
-    public function __call($method, $arguments)
+    /**
+     * @param string $method
+     * @param array $arguments
+     * 
+     * @return Curl
+     */
+    public function __call(string $method, array $arguments)
     {
         return $this->newCurl()->$method(...$arguments);
     }
 
+    /**
+     * @param string $method
+     * @param array $arguments
+     * 
+     * @return Curl
+     */
     public static function __callStatic($method, $arguments)
     {
         return (new static)->$method(...$arguments);

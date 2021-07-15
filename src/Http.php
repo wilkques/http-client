@@ -30,11 +30,23 @@ class Http
         return $this->curlHttpClient = $this->curlHttpClient ?? new CurlHTTPClient;
     }
 
-    public function __call($method, $arguments)
+    /**
+     * @param string $method
+     * @param array $arguments
+     * 
+     * @return CurlHTTPClient
+     */
+    public function __call(string $method, array $arguments)
     {
         return $this->newCurlHttpClient()->$method(...$arguments);
     }
 
+    /**
+     * @param string $method
+     * @param array $arguments
+     * 
+     * @return CurlHTTPClient
+     */
     public static function __callStatic($method, $arguments)
     {
         return (new static)->$method(...$arguments);

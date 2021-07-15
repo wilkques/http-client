@@ -1,6 +1,6 @@
 <?php
 
-namespace Wilkques\HttpClient\Exception;
+namespace Wilkques\HttpClient\Exceptions;
 
 class CurlExecutionException extends \Exception
 {

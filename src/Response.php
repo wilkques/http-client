@@ -4,7 +4,7 @@ namespace Wilkques\HttpClient;
 
 use ArrayAccess;
 use JsonSerializable;
-use Wilkques\HttpClient\Exception\RequestException;
+use Wilkques\HttpClient\Exceptions\RequestException;
 
 /**
  * A class represents API response.

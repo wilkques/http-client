@@ -2,21 +2,15 @@
 
 namespace Wilkques\HttpClient\HTTPClient;
 
-/**
- * The interface that represents HTTP client API.
- *
- * If you want to switch using HTTP client, please implement this.
- */
 interface HTTPClient
 {
     /**
      * Sends GET request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array $data Request body
      * 
-     * @return Response Response of API request.
+     * @return \Wilkques\HttpClient\Response Response of API request.
      * 
      * @throws CurlExecutionException
      */
@@ -26,53 +20,52 @@ interface HTTPClient
      * Sends POST request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array[] $data Request body or resource path.
+     * @param array|null $query
      * 
-     * @return Response Response of API request.
+     * @return \Wilkques\HttpClient\Response Response of API request.
      * 
-     * @throws CurlExecutionException
+     * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function post(string $url, array $data);
+    public function post(string $url, array $data = [], array $query = null);
 
     /**
      * Sends DELETE request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array[] $query
      * 
-     * @return Response Response of API request.
+     * @return \Wilkques\HttpClient\Response Response of API request.
      * 
-     * @throws CurlExecutionException
+     * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function delete(string $url);
+    public function delete(string $url, array $data = []);
 
     /**
      * Sends PUT request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array[] $data Request body or resource path.
+     * @param array|null $query
      * 
-     * @return Response Response of API request.
+     * @return \Wilkques\HttpClient\Response Response of API request.
      * 
-     * @throws CurlExecutionException
+     * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function put(string $url);
+    public function put(string $url, array $data = [], array $query = null);
 
     /**
      * Sends PATCH request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body or resource path.
-     * @param array $query
+     * @param array[] $data Request body or resource path.
+     * @param array|null $query
      * 
-     * @return Response Response of API request.
+     * @return \Wilkques\HttpClient\Response Response of API request.
      * 
-     * @throws CurlExecutionException
+     * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function patch(string $url);
+    public function patch(string $url, array $data = [], array $query = []);
 
     /**
      * header
