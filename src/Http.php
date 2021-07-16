@@ -25,7 +25,7 @@ class Http
     protected $curlHttpClient;
 
     /**
-     * @return CurlHTTPClient
+     * @return mixed
      */
     public function newCurlHttpClient()
     {
@@ -36,7 +36,7 @@ class Http
      * @param string $method
      * @param array $arguments
      * 
-     * @return CurlHTTPClient
+     * @return mixed
      */
     public function __call(string $method, array $arguments)
     {
@@ -47,7 +47,7 @@ class Http
      * @param string $method
      * @param array $arguments
      * 
-     * @return CurlHTTPClient
+     * @return mixed
      */
     public static function __callStatic($method, $arguments)
     {

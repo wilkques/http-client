@@ -8,13 +8,13 @@ interface HTTPClient
      * Sends GET request to API.
      *
      * @param string $url Request URL.
-     * @param array $data Request body
+     * @param array[] $query Request body
      * 
      * @return \Wilkques\HttpClient\Response Response of API request.
      * 
      * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function get(string $url, array $data = []);
+    public function get(string $url, array $query = []);
 
     /**
      * Sends POST request to API.
@@ -39,7 +39,7 @@ interface HTTPClient
      * 
      * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function delete(string $url, array $data = []);
+    public function delete(string $url, array $query = []);
 
     /**
      * Sends PUT request to API.
@@ -88,6 +88,15 @@ interface HTTPClient
     /**
      * header
      * 
+     * 'Content-Type' => 'multipart/form-data; charset=utf-8'
+     * 
+     * @return static
+     */
+    public function asMultipart();
+
+    /**
+     * header
+     * 
      * 'Authorization' => $token
      * 
      * @param string $token
@@ -105,4 +114,16 @@ interface HTTPClient
      * @return static
      */
     public function withHeaders(array $headers);
+
+    /**
+     * attach file
+     * 
+     * @param array|string $name
+     * @param string|null $filePath
+     * @param string|null $mimeType
+     * @param string|null $reName
+     * 
+     * @return static
+     */
+    public function attach($name, string $filePath = '', string $mimeType = null, string $reName = null);
 }

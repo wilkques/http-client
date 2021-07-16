@@ -74,18 +74,15 @@ class CurlHTTPClient implements HTTPClient
      * Sends GET request to API.
      *
      * @param string $url Request URL.
-     * @param array[] $data Request body
+     * @param array[] $query Request body
      * 
      * @return Response Response of API request.
      * 
      * @throws CurlExecutionException
      */
-    public function get(string $url, array $data = [])
+    public function get(string $url, array $query = [])
     {
-        return $this->methodGet()->sendRequest(
-            'GET',
-            $this->urlBuilder($url, $data)
-        );
+        return $this->methodGet()->sendRequest('GET', $this->urlBuilder($url, $query));
     }
 
     /**
@@ -141,15 +138,15 @@ class CurlHTTPClient implements HTTPClient
      * Sends DELETE request to API.
      *
      * @param string $url Request URL.
-     * @param array[] $data
+     * @param array[] $query
      * 
      * @return Response Response of API request.
      * 
      * @throws CurlExecutionException
      */
-    public function delete(string $url, array $data = [])
+    public function delete(string $url, array $query = [])
     {
-        return $this->sendRequest('DELETE', $this->urlBuilder($url, $data), []);
+        return $this->sendRequest('DELETE', $this->urlBuilder($url, $query));
     }
 
     /**
