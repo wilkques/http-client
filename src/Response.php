@@ -5,6 +5,7 @@ namespace Wilkques\HttpClient;
 use ArrayAccess;
 use JsonSerializable;
 use Wilkques\HttpClient\Exceptions\RequestException;
+use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
 
 /**
  * A class represents API response.
@@ -18,7 +19,7 @@ class Response implements JsonSerializable, ArrayAccess
     /** @var string[] */
     private $headers;
     /** @var array */
-    private $curlInfo;
+    private $client;
 
     /**
      * Response constructor.
@@ -26,29 +27,29 @@ class Response implements JsonSerializable, ArrayAccess
      * @param string|null $result
      * @param array|null $info
      */
-    public function __construct(string $result = null, array $info = null)
+    public function __construct(string $result = null, CurlHTTPClient $client = null)
     {
-        $this->setInfo($info)->response($result);
+        $this->setClient($client)->response($result);
     }
 
     /**
-     * @param array|null $info
+     * @param CurlHTTPClient $client
      * 
      * @return static
      */
-    public function setInfo(array $info = null)
+    public function setClient(CurlHTTPClient $client = null)
     {
-        $this->curlInfo = $info;
+        $this->client = $client;
 
         return $this;
     }
 
     /**
-     * @return array
+     * @return CurlHTTPClient
      */
-    public function info()
+    public function client()
     {
-        return $this->curlInfo;
+        return $this->client;
     }
 
     /**
@@ -61,7 +62,7 @@ class Response implements JsonSerializable, ArrayAccess
         [
             'http_code'     => $httpStatus,
             'header_size'   => $responseHeaderSize
-        ] = $this->info();
+        ] = $this->client()->newCurl()->getinfo();
 
         $this->setHttpStatus($httpStatus)
             ->setHeaders($this->responseHeaders($result, $responseHeaderSize))

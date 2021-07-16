@@ -12,7 +12,7 @@ interface HTTPClient
      * 
      * @return \Wilkques\HttpClient\Response Response of API request.
      * 
-     * @throws CurlExecutionException
+     * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
     public function get(string $url, array $data = []);
 

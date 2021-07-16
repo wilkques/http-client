@@ -16,13 +16,15 @@ class CurlHTTPClient implements HTTPClient
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
     ];
+    /** @var array */
+    private $files = [];
 
     /**
      * CurlHTTPClient constructor.
      */
     public function __construct()
     {
-        $this->asJson();
+        $this->asJson()->acceptJson();
     }
 
     /**
@@ -191,13 +193,21 @@ class CurlHTTPClient implements HTTPClient
     }
 
     /**
+     * @return static
+     */
+    public function asMultipart()
+    {
+        return $this->contentType('multipart/form-data; charset=utf-8; boundary=' . uniqid());
+    }
+
+    /**
      * @param array $options
      * 
      * @return static
      */
     public function setOptions(array $options)
     {
-        $this->options += $options;
+        $this->options = array_replace_recursive($this->getOptions(), $options);
 
         return $this;
     }
@@ -208,6 +218,16 @@ class CurlHTTPClient implements HTTPClient
     public function getOptions()
     {
         return $this->options;
+    }
+
+    /**
+     * @return static
+     */
+    public function acceptJson()
+    {
+        return $this->withHeaders([
+            'Accept' => 'application/json'
+        ]);
     }
 
     /**
@@ -281,11 +301,11 @@ class CurlHTTPClient implements HTTPClient
     }
 
     /**
-     * @param string $fields
+     * @param string|array|null $fields
      * 
      * @return static
      */
-    private function postFields(string $fields)
+    private function postFields($fields)
     {
         $this->setOptions([CURLOPT_POSTFIELDS => $fields]);
 
@@ -293,15 +313,40 @@ class CurlHTTPClient implements HTTPClient
     }
 
     /**
+     * @param array|string $name
      * @param string|null $filePath
+     * @param string|null $mimeType
+     * @param string|null $reName
      * 
      * @return static
      */
-    public function attach(string $filePath = null)
+    public function attach($name, string $filePath = '', string $mimeType = null, string $reName = null)
     {
-        $this->methodPut();
-        $this->setOptions([
-            CURLOPT_BINARYTRANSFER => true,
+        if (is_array($name)) {
+            foreach ($name as $file) {
+                $this->attach(...$file);
+            }
+
+            return $this;
+        }
+
+        $mimeType = $mimeType ?? mime_content_type($filePath);
+
+        $fileName = $reName ?? pathinfo($filePath)['basename'];
+
+        return $this->asMultipart()->setFiles($name, curl_file_create($filePath, $mimeType, $fileName));
+    }
+
+    /**
+     * Only send one File
+     * 
+     * @param string $filePath
+     * 
+     * @return static
+     */
+    public function attachUploadFile(string $filePath)
+    {
+        $this->methodPut()->setOptions([
             CURLOPT_INFILE => fopen($filePath, 'r'),
             CURLOPT_INFILESIZE => filesize($filePath)
         ]);
@@ -322,6 +367,27 @@ class CurlHTTPClient implements HTTPClient
     }
 
     /**
+     * @param string $key
+     * @param \CURLFile $cURLFile
+     * 
+     * @return static
+     */
+    public function setFiles(string $key, \CURLFile $cURLFile)
+    {
+        $this->files[$key] = $cURLFile;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
      * @param string $method
      * @param string|array|null $reqBody
      * 
@@ -332,18 +398,14 @@ class CurlHTTPClient implements HTTPClient
         $this->customRequest($method)->setHeaders();
 
         if (is_null($reqBody)) {
-            $this->noContentLength();
-        } else {
-            if (in_array('application/x-www-form-urlencoded; charset=utf-8', $this->headers)) {
-                $this->postFields(http_build_query($reqBody));
-            } elseif (in_array('application/json; charset=utf-8', $this->headers)) {
-                $this->postFields(json_encode($reqBody));
-            } else {
-                $this->postFields($reqBody);
-            }
+            return $this->noContentLength();
         }
 
-        return $this;
+        if (in_array('application/x-www-form-urlencoded; charset=utf-8', $this->headers)) {
+            return $this->postFields(http_build_query($reqBody));
+        }
+
+        return $this->postFields(array_replace_recursive($reqBody, $this->getFiles()));
     }
 
     /**
@@ -362,7 +424,7 @@ class CurlHTTPClient implements HTTPClient
                 $method,
                 $reqBody
             )->getOptions()),
-            $this->getinfo()
+            $this
         );
     }
 
