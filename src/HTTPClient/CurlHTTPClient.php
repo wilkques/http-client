@@ -226,7 +226,7 @@ class CurlHTTPClient implements HTTPClient
     public function acceptJson()
     {
         return $this->withHeaders([
-            'Accept' => 'application/json'
+            'Accept' => 'application/json; charset=utf-8'
         ]);
     }
 
@@ -334,7 +334,7 @@ class CurlHTTPClient implements HTTPClient
 
         $fileName = $reName ?? pathinfo($filePath)['basename'];
 
-        return $this->asMultipart()->setFiles($name, curl_file_create($filePath, $mimeType, $fileName));
+        return $this->setFiles($name, curl_file_create($filePath, $mimeType, $fileName));
     }
 
     /**
@@ -399,10 +399,6 @@ class CurlHTTPClient implements HTTPClient
 
         if (is_null($reqBody)) {
             return $this->noContentLength();
-        }
-
-        if (in_array('application/x-www-form-urlencoded; charset=utf-8', $this->headers)) {
-            return $this->postFields(http_build_query($reqBody));
         }
 
         return $this->postFields(array_replace_recursive($reqBody, $this->getFiles()));

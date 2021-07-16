@@ -19,7 +19,9 @@ $response = Http::asForm() // add header application/x-www-form-urlencoded
 
 $response = Http::asJson() // add header application/json
 
-$response = Http::attach('<file path>') // add file
+$response = Http::asMultipart() // add header multipart/form-data
+
+$response = Http::attach('<post key name>', '<file path>', '<file type>', '<file name>') // add file
 
 $response = Http::post('<url>', [ ... ]) // method post
 
