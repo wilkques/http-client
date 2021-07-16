@@ -133,7 +133,7 @@ class Response implements JsonSerializable, ArrayAccess
     /**
      * @param mixed $callable
      * 
-     * @throws UnexpectedValueException
+     * @throws \UnexpectedValueException
      * 
      * @return mixed
      */
