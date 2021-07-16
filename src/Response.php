@@ -121,13 +121,28 @@ class Response implements JsonSerializable, ArrayAccess
     {
         if ($this->failed()) {
             if ($callable && is_callable($callable)) {
-                throw $callable($this, $this->getThrows());
+                throw $this->callableReturnCheck($callable($this, $this->getThrows()));
             }
 
             throw $this->getThrows();
         }
 
         return $this;
+    }
+
+    /**
+     * @param mixed $callable
+     * 
+     * @throws UnexpectedValueException
+     * 
+     * @return mixed
+     */
+    protected function callableReturnCheck($callable = null)
+    {
+        if (is_null($callable)) return $this->getThrows();
+        else if (!is_object($callable)) throw new \UnexpectedValueException("throw return must be Exception Object");
+
+        return $callable;
     }
 
     /**
