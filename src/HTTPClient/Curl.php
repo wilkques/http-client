@@ -124,6 +124,16 @@ class Curl
     }
 
     /**
+     * create curl file
+     * 
+     * @return \CURLFile
+     */
+    public function createFile($filePath, $mimeType, $fileName)
+    {
+        return curl_file_create($filePath, $mimeType, $fileName);
+    }
+
+    /**
      * @return int Returns the error number or 0 (zero) if no error occurred.
      */
     public function errno()

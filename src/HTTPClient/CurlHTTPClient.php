@@ -331,7 +331,7 @@ class CurlHTTPClient implements HTTPClient
 
         $fileName = $reName ?? pathinfo($filePath)['basename'];
 
-        return $this->setFiles($name, curl_file_create($filePath, $mimeType, $fileName));
+        return $this->setFiles($name, $this->createFile($filePath, $mimeType, $fileName));
     }
 
     /**
