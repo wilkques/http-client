@@ -1,9 +1,9 @@
 <?php
 
-namespace Wilkques\HttpClient\Exceptions;
+namespace Wilkques\Http\Exceptions;
 
-use Wilkques\HttpClient\Exceptions\CurlExecutionException;
-use Wilkques\HttpClient\Response;
+use Wilkques\Http\Exceptions\CurlExecutionException;
+use Wilkques\Http\Response;
 
 class RequestException extends CurlExecutionException
 {

@@ -11,7 +11,7 @@ composer require wilkques/http-client
 ## How to use
 
 ```php
-use Wilkques\HttpClient\Http;
+use Wilkques\Http\Http;
 ```
 
 ## Methods
@@ -151,5 +151,6 @@ use Wilkques\HttpClient\Http;
 
     $response->throw(function ($response, $exception) {
         // code
+        // return exception
     });
     ```

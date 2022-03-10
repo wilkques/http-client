@@ -1,8 +1,8 @@
 <?php
 
-namespace Wilkques\HttpClient\HTTPClient;
+namespace Wilkques\Http\Contracts;
 
-interface HTTPClient
+interface ClientInterface
 {
     /**
      * Sends GET request to API.

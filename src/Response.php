@@ -1,16 +1,13 @@
 <?php
 
-namespace Wilkques\HttpClient;
+namespace Wilkques\Http;
 
-use ArrayAccess;
-use JsonSerializable;
-use Wilkques\HttpClient\Exceptions\RequestException;
-use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
+use Wilkques\Http\Exceptions\RequestException;
 
 /**
  * A class represents API response.
  */
-class Response implements JsonSerializable, ArrayAccess
+class Response implements \JsonSerializable, \ArrayAccess
 {
     /** @var int */
     private $httpStatus;
@@ -18,8 +15,6 @@ class Response implements JsonSerializable, ArrayAccess
     private $body;
     /** @var string[] */
     private $headers;
-    /** @var array */
-    private $client;
 
     /**
      * Response constructor.
@@ -27,29 +22,9 @@ class Response implements JsonSerializable, ArrayAccess
      * @param string|null $result
      * @param array|null $info
      */
-    public function __construct(string $result = null, CurlHTTPClient $client = null)
+    public function __construct(string $result = null, array $info = [])
     {
-        $this->setClient($client)->response($result);
-    }
-
-    /**
-     * @param CurlHTTPClient $client
-     * 
-     * @return static
-     */
-    public function setClient(CurlHTTPClient $client = null)
-    {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * @return CurlHTTPClient
-     */
-    public function client()
-    {
-        return $this->client;
+        $this->response($result, $info);
     }
 
     /**
@@ -57,18 +32,16 @@ class Response implements JsonSerializable, ArrayAccess
      * 
      * @return static
      */
-    protected function response(string $result = null)
+    protected function response(string $result = null, array $info = [])
     {
         [
             'http_code'     => $httpStatus,
             'header_size'   => $responseHeaderSize
-        ] = $this->client()->newCurl()->getinfo();
+        ] = $info;
 
-        $this->setHttpStatus($httpStatus)
+        return $this->setHttpStatus($httpStatus)
             ->setHeaders($this->responseHeaders($result, $responseHeaderSize))
             ->setBody($this->bodyHandle($result, $responseHeaderSize));
-
-        return $this;
     }
 
     /**

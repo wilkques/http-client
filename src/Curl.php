@@ -1,6 +1,6 @@
 <?php
 
-namespace Wilkques\HttpClient\HTTPClient;
+namespace Wilkques\Http;
 
 /**
  * cURL session manager
@@ -11,8 +11,8 @@ class Curl
     private $curlHandle;
     /** @var string */
     private $url;
-    /** @var CurlHTTPClient */
-    private $curlHTTPClient;
+    /** @var Client */
+    private $client;
 
     /**
      * @param string $url
@@ -71,13 +71,13 @@ class Curl
     }
 
     /**
-     * @param CurlHTTPClient $curlHTTPClient
+     * @param Client $curlHTTPClient
      * 
      * @return static
      */
-    public function setCurlHttpClient(CurlHTTPClient $curlHTTPClient)
+    public function setClient(Client $client)
     {
-        $this->curlHTTPClient = $curlHTTPClient;
+        $this->client = $client;
 
         return $this;
     }
@@ -85,9 +85,9 @@ class Curl
     /**
      * @return CurlHTTPClient
      */
-    public function getCurlHttpClient()
+    public function getClient()
     {
-        return $this->curlHTTPClient;
+        return $this->client;
     }
 
     /**
@@ -159,6 +159,6 @@ class Curl
 
     public function __call($method, $arguments)
     {
-        return $this->getCurlHttpClient()->$method(...$arguments);
+        return $this->getClient()->$method(...$arguments);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace Wilkques\HttpClient\HTTPClient;
+namespace Wilkques\Http;
 
-use Wilkques\HttpClient\Exceptions\CurlExecutionException;
-use Wilkques\HttpClient\Response;
+use Wilkques\Http\Contracts\ClientInterface;
+use Wilkques\Http\Exceptions\CurlExecutionException;
 
-class CurlHTTPClient implements HTTPClient
+class Client implements ClientInterface
 {
     /** @var array */
     private $headers = [];
@@ -417,7 +417,7 @@ class CurlHTTPClient implements HTTPClient
                 $method,
                 $reqBody
             )->getOptions()),
-            $this
+            $this->getinfo()
         );
     }
 
@@ -453,7 +453,7 @@ class CurlHTTPClient implements HTTPClient
      */
     public function newCurl()
     {
-        return $this->getCurl() ?: $this->setCurl(new Curl)->setCurlHttpClient($this);
+        return $this->getCurl() ?: $this->setCurl(new Curl)->setClient($this);
     }
 
     /**
@@ -478,9 +478,12 @@ class CurlHTTPClient implements HTTPClient
         return (new static)->$method(...$arguments);
     }
 
+    /**
+     * CurlHTTPClient destruct.
+     */
     public function __destruct()
     {
-        $this->fileClose();
-        $this->close();
+        // $this->fileClose();
+        // $this->close();
     }
 }

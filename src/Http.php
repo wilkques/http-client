@@ -1,8 +1,8 @@
 <?php
 
-namespace Wilkques\HttpClient;
+namespace Wilkques\Http;
 
-use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
+use Wilkques\Http\Client;
 
 /**
  * @method static static asForm() add header Content-Type application/x-www-form-urlencoded; charset=utf-8
@@ -13,23 +13,23 @@ use Wilkques\HttpClient\HTTPClient\CurlHTTPClient;
  * @method static static attach(string|array $name, ?string $filePath = null, ?string $mimeType = null, ?string $reName = null) file upload
  * @method static static attachUploadFile(string $filePath) Only send one File.
  * @method static static contentType(string $contentType) custom Content-Type
- * @method static \Wilkques\HttpClient\Response get(string $url, array $data = []) http method get
- * @method static \Wilkques\HttpClient\Response post(string $url, array $data, array $query = null) http method post
- * @method static \Wilkques\HttpClient\Response put(string $url, array $data = [], array $query = null)
- * @method static \Wilkques\HttpClient\Response patch(string $url, array $data = [], array $query = null)
- * @method static \Wilkques\HttpClient\Response delete(string $url, array $query = null)
+ * @method static \Wilkques\Http\Response get(string $url, array $data = []) http method get
+ * @method static \Wilkques\Http\Response post(string $url, array $data, array $query = null) http method post
+ * @method static \Wilkques\Http\Response put(string $url, array $data = [], array $query = null)
+ * @method static \Wilkques\Http\Response patch(string $url, array $data = [], array $query = null)
+ * @method static \Wilkques\Http\Response delete(string $url, array $query = null)
  */
 class Http
 {
-    /** @var CurlHTTPClient */
-    protected $curlHttpClient;
+    /** @var Client */
+    protected $client;
 
     /**
      * @return mixed
      */
-    public function newCurlHttpClient()
+    public function newClient()
     {
-        return $this->curlHttpClient = $this->curlHttpClient ?? new CurlHTTPClient;
+        return $this->client = $this->client ?? new Client;
     }
 
     /**
@@ -40,7 +40,7 @@ class Http
      */
     public function __call(string $method, array $arguments)
     {
-        return $this->newCurlHttpClient()->$method(...$arguments);
+        return $this->newClient()->$method(...$arguments);
     }
 
     /**
