@@ -146,6 +146,10 @@ use Wilkques\Http\Http;
 
     ```php
     $response->throw(); // throw exception
+    
+    // or
+    
+    $response->throw(new \Exception('<message>', '<code>'));
 
     // or
 
