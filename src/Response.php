@@ -86,7 +86,7 @@ class Response implements \JsonSerializable, \ArrayAccess
     /**
      * @param callable|\Exception|null $callable
      * 
-     * @throws RequestException
+     * @throws RequestException|\UnexpectedValueException|\Exception
      * 
      * @return static
      */
