@@ -84,17 +84,21 @@ class Response implements \JsonSerializable, \ArrayAccess
     }
 
     /**
-     * @param callable|null $callable
+     * @param callable|\Exception|null $callable
      * 
      * @throws RequestException
      * 
-     * @return $this
+     * @return static
      */
-    public function throw(callable $callable = null)
+    public function throw($throw = null)
     {
         if ($this->failed()) {
-            if ($callable && is_callable($callable)) {
-                throw $this->callableReturnCheck($callable($this, $this->getThrows()));
+            if ($throw && is_callable($throw)) {
+                throw $this->callableReturnCheck($throw($this, $this->getThrows()));
+            }
+            
+            if ($throw && $throw instanceof \Exception) {
+                throw $throw;
             }
 
             throw $this->getThrows();
@@ -306,6 +310,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      * Get the value for a given offset.
      *
      * @param  mixed  $offset
+     *
      * @return mixed
      */
     public function offsetGet($offset)
@@ -318,7 +323,6 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @param  mixed  $offset
      * @param  mixed  $value
-     * @return void
      */
     public function offsetSet($offset, $value)
     {
@@ -329,6 +333,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      * Determine if the given attribute exists.
      *
      * @param  mixed  $offset
+     *
      * @return bool
      */
     public function offsetExists($offset)
@@ -340,7 +345,6 @@ class Response implements \JsonSerializable, \ArrayAccess
      * Unset the value for a given offset.
      *
      * @param  mixed  $offset
-     * @return void
      */
     public function offsetUnset($offset)
     {
@@ -362,7 +366,6 @@ class Response implements \JsonSerializable, \ArrayAccess
      * Unset an attribute on the model.
      *
      * @param  string  $key
-     * @return void
      */
     public function __unset($key)
     {
