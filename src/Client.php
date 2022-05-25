@@ -178,7 +178,7 @@ class Client implements ClientInterface
      */
     public function getHeaders()
     {
-        return $this->header;
+        return $this->headers;
     }
 
     /**
