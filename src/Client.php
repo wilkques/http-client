@@ -168,7 +168,7 @@ class Client implements ClientInterface
      */
     public function withHeaders(array $headers)
     {
-        $this->headers = array_replace_recursive($this->headers, $headers);
+        $this->headers = array_replace_recursive($this->getHeaders(), $headers);
 
         return $this;
     }
@@ -301,7 +301,7 @@ class Client implements ClientInterface
     private function setHeaders()
     {
         $this->setOptions([
-            CURLOPT_HTTPHEADER => $this->headers
+            CURLOPT_HTTPHEADER => $this->getHeaders()
         ]);
 
         return $this;
