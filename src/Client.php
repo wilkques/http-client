@@ -174,6 +174,24 @@ class Client implements ClientInterface
     }
 
     /**
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->header;
+    }
+
+    /**
+     * @param string $key
+     * 
+     * @return string
+     */
+    public function getHeader(string $key)
+    {
+        return $this->getHeaders()[$key];
+    }
+
+    /**
      * @return static
      */
     public function asForm()
@@ -304,6 +322,8 @@ class Client implements ClientInterface
      */
     private function postFields($fields)
     {
+        $this->getHeader('Content-Type') == 'application/x-www-form-urlencoded; charset=utf-8' && $fields = http_build_query($fields);
+
         $this->setOptions([CURLOPT_POSTFIELDS => $fields]);
 
         return $this;
