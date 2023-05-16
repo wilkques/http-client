@@ -470,20 +470,14 @@ class Client implements ClientInterface
     private function sendRequest(string $method, string $url, $reqBody = null)
     {
         $this->setUrl($url)->init()->setoptArray(
-            $this->options(
-                $method,
-                $reqBody
-            )->getOptions()
+            $this->options($method, $reqBody)->getOptions()
         );
 
         if ($this->async) {
             return $this;
         }
 
-        return new Response(
-            $this->execCurl(),
-            $this->getInfo()
-        );
+        return new Response($this->execCurl(), $this->getInfo());
     }
 
     /**
