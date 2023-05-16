@@ -154,7 +154,7 @@ class Curl
      */
     public function close()
     {
-        curl_close($this->getCurlHandle());
+        $this->getCurlHandle() && curl_close($this->getCurlHandle());
     }
 
     public function __call($method, $arguments)

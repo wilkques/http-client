@@ -20,6 +20,10 @@ use Wilkques\Http\Http;
 
     ```php
     $response = Http::withHeaders([ ... ]); // add header
+
+    // Ex
+
+    $response = Http::withHeaders([ CURLOPT_TIMEOUT => 100 ]);
     ```
 
 1. `asForm`

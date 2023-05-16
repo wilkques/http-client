@@ -9,13 +9,16 @@ class Client implements ClientInterface
 {
     /** @var array */
     private $headers = [];
+
     /** @var Curl */
     private $curl;
+
     /** @var array */
     private $options = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
     ];
+
     /** @var array */
     private $files = [];
 
@@ -54,9 +57,7 @@ class Client implements ClientInterface
      */
     public function withToken(string $token, string $type = 'Bearer')
     {
-        $this->withHeaders([sprintf("Authorization: %s", trim("$type $token"))]);
-
-        return $this;
+        return $this->withHeaders([sprintf("Authorization: %s", trim("$type $token"))]);
     }
 
     /**
@@ -67,7 +68,7 @@ class Client implements ClientInterface
      */
     protected function urlBuilder(string $url, $data)
     {
-        return $data ? $url .= '?' . http_build_query($data) : $url;
+        return $data ? $url .= '?' . http_build_query($data, '', '&', PHP_QUERY_RFC3986) : $url;
     }
 
     /**
@@ -322,11 +323,29 @@ class Client implements ClientInterface
      */
     private function postFields($fields)
     {
-        $this->getHeader('Content-Type') == 'application/x-www-form-urlencoded; charset=utf-8' && $fields = http_build_query($fields);
-
-        $this->setOptions([CURLOPT_POSTFIELDS => $fields]);
+        $this->setOptions([CURLOPT_POSTFIELDS => $this->fieldsEncode($fields)]);
 
         return $this;
+    }
+
+    /**
+     * @param string|array|null $fields
+     * 
+     * @return static
+     */
+    protected function fieldsEncode($fields)
+    {
+        switch ($this->getHeader('Content-Type')) {
+            case 'application/x-www-form-urlencoded; charset=utf-8':
+                return http_build_query($fields);
+                break;
+                // case 'application/json; charset=utf-8':
+                //     $fields = json_encode($fields);
+                //     break;
+            default:
+                return $fields;
+                break;
+        }
     }
 
     /**
@@ -363,12 +382,11 @@ class Client implements ClientInterface
      */
     public function attachUploadFile(string $filePath)
     {
-        $this->methodPut()->setOptions([
-            CURLOPT_INFILE => fopen($filePath, 'r'),
+        return $this->methodPut()->setOptions([
+            CURLOPT_UPLOAD => true,
+            CURLOPT_INFILE => fopen($filePath, 'rb'),
             CURLOPT_INFILESIZE => filesize($filePath)
         ]);
-
-        return $this;
     }
 
     /**
@@ -378,6 +396,12 @@ class Client implements ClientInterface
     {
         if (isset($this->getOptions()[CURLOPT_INFILE])) {
             fclose($this->getOptions()[CURLOPT_INFILE]);
+        }
+
+        if ($files = $this->getFiles()) {
+            foreach ($files as $file) {
+                fclose($file->getStream());
+            }
         }
 
         return $this;
@@ -459,16 +483,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param array $additionalHeader
-     * 
-     * @return array
-     */
-    protected function additionalHeader(array $additionalHeader)
-    {
-        return array_merge($this->getToken(), $additionalHeader);
-    }
-
-    /**
      * @return Curl
      */
     public function newCurl()
@@ -480,7 +494,7 @@ class Client implements ClientInterface
      * @param string $method
      * @param array $arguments
      * 
-     * @return Curl
+     * @return mixed
      */
     public function __call(string $method, array $arguments)
     {
@@ -491,7 +505,7 @@ class Client implements ClientInterface
      * @param string $method
      * @param array $arguments
      * 
-     * @return Curl
+     * @return mixed
      */
     public static function __callStatic($method, $arguments)
     {
@@ -499,11 +513,10 @@ class Client implements ClientInterface
     }
 
     /**
-     * CurlHTTPClient destruct.
+     * Client destruct.
      */
     public function __destruct()
     {
-        // $this->fileClose();
-        // $this->close();
+        $this->fileClose()->close();
     }
 }
