@@ -162,3 +162,37 @@ use Wilkques\Http\Http;
         // return exception
     });
     ```
+
+1. `pool`
+
+    ```php
+    $response = \Wilkques\Http\Http::Pool(function ($pool) {
+        return [
+            $pool->get('http://example.com/get', ['test' => 123]),
+            $pool->post('http://example.com/post', ['abc' => 123]),
+        ];
+    });
+
+    // output
+    // array(
+    //    Wilkques\Http\Response...,
+    //    Wilkques\Http\Response...,
+    // )
+    var_dump($response);
+
+    // or
+
+    $response = \Wilkques\Http\Http::Pool(function ($pool) {
+        return [
+            $pool->as('get')->get('http://example.com/get', ['test' => 123]),
+            $pool->as('post')->post('http://example.com/post', ['abc' => 123]),
+        ];
+    });
+
+    // output
+    // array(
+    //    'get'     => Wilkques\Http\Response...,
+    //    'post'    => Wilkques\Http\Response...,
+    // )
+    var_dump($response);
+    ```

@@ -40,7 +40,11 @@ class Http
      */
     public function __call(string $method, array $arguments)
     {
-        return $this->newClient()->$method(...$arguments);
+        if (method_exists($this->newClient(), $method)) {
+            return $this->newClient()->$method(...$arguments);
+        }
+
+        return (new Pool)->$method(...$arguments);
     }
 
     /**

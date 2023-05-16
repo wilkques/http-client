@@ -10,7 +10,7 @@ class Client implements ClientInterface
     /** @var array */
     private $headers = [];
 
-    /** @var Curl */
+    /** @var CurlHandle */
     private $curl;
 
     /** @var array */
@@ -22,6 +22,9 @@ class Client implements ClientInterface
     /** @var array */
     private $files = [];
 
+    /** @var bool */
+    protected $async = false;
+
     /**
      * CurlHTTPClient constructor.
      */
@@ -31,11 +34,21 @@ class Client implements ClientInterface
     }
 
     /**
+     * @return static
+     */
+    public function async()
+    {
+        $this->async = true;
+
+        return $this;
+    }
+
+    /**
      * @param Curl $curl
      * 
      * @return static
      */
-    public function setCurl(Curl $curl)
+    public function setCurl(CurlHandle $curl)
     {
         $this->curl = $curl;
 
@@ -456,25 +469,28 @@ class Client implements ClientInterface
      */
     private function sendRequest(string $method, string $url, $reqBody = null)
     {
-        return new Response(
-            $this->execCurl($url, $this->options(
+        $this->setUrl($url)->init()->setoptArray(
+            $this->options(
                 $method,
                 $reqBody
-            )->getOptions()),
-            $this->getinfo()
+            )->getOptions()
+        );
+
+        if ($this->async) {
+            return $this;
+        }
+
+        return new Response(
+            $this->execCurl(),
+            $this->getInfo()
         );
     }
 
     /**
-     * @param string $url
-     * @param array $options
-     * 
      * @return string
      */
-    protected function execCurl(string $url, array $options)
+    protected function execCurl()
     {
-        $this->setUrl($url)->init()->setoptArray($options);
-
         $result = $this->exec();
 
         if ($this->errno()) throw new CurlExecutionException($this->error(), $this->errno());
@@ -483,11 +499,11 @@ class Client implements ClientInterface
     }
 
     /**
-     * @return Curl
+     * @return CurlHandle
      */
     public function newCurl()
     {
-        return $this->getCurl() ?: $this->setCurl(new Curl)->setClient($this);
+        return $this->getCurl() ?: $this->setCurl(new CurlHandle)->setClient($this);
     }
 
     /**

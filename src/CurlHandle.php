@@ -5,12 +5,14 @@ namespace Wilkques\Http;
 /**
  * cURL session manager
  */
-class Curl
+class CurlHandle
 {
     /** @var \CurlHandle */
     private $curlHandle;
+
     /** @var string */
     private $url;
+
     /** @var Client */
     private $client;
 
@@ -118,7 +120,7 @@ class Curl
      *
      * @return array
      */
-    public function getinfo()
+    public function getInfo()
     {
         return curl_getinfo($this->getCurlHandle());
     }
