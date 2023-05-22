@@ -191,13 +191,16 @@ use Wilkques\Http\Http;
             var_dump($exception); // \Wilkques\Http\Exceptions\CurlExecutionException
 
             return $response;
-        }
+        },
+        'options'   => [
+            // curl_multi_setopt option & value ...
+        ]
     ]);
 
     // output
     // array(
-    //    Wilkques\Http\Response...,
-    //    Wilkques\Http\Response...,
+    //    '0'       => Wilkques\Http\Response...,
+    //    '1'       => Wilkques\Http\Response...,
     //    'get'     => Wilkques\Http\Response...,
     //    'post'    => Wilkques\Http\Response...,
     // )
