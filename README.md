@@ -166,7 +166,7 @@ use Wilkques\Http\Http;
 1. `pool`
 
     ```php
-    $response = \Wilkques\Http\Http::Pool(function ($pool) {
+    $response = \Wilkques\Http\Http::Pool(function (\Wilkques\Http\Pool $pool) {
         return [
             $pool->get('http://example.com/get', ['abc' => 123]),
             $pool->post('http://example.com/post', ['def' => 456]),
