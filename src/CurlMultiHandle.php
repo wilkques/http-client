@@ -47,13 +47,13 @@ class CurlMultiHandle
     }
 
     /**
-     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client
+     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client $client
      * 
      * @return static
      */
-    public function addHandle($channel)
+    public function addHandle($client)
     {
-        return curl_multi_add_handle($this->getCurlMultiHandle(), $channel->getCurlHandle());
+        return curl_multi_add_handle($this->getCurlMultiHandle(), $client->getCurlHandle());
     }
 
     /**
@@ -67,21 +67,23 @@ class CurlMultiHandle
     }
 
     /**
+     * @param float $timeout
+     * 
      * @return int
      */
-    public function select()
+    public function select(float $timeout = 1.0)
     {
-        return curl_multi_select($this->getCurlMultiHandle());
+        return curl_multi_select($this->getCurlMultiHandle(), $timeout);
     }
 
     /**
-     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client
+     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client $client
      * 
      * @return static
      */
-    public function removeHandle($channel)
+    public function removeHandle($client)
     {
-        return curl_multi_remove_handle($this->getCurlMultiHandle(), $channel->getCurlHandle());
+        return curl_multi_remove_handle($this->getCurlMultiHandle(), $client->getCurlHandle());
     }
 
     /**
@@ -95,13 +97,13 @@ class CurlMultiHandle
     }
 
     /**
-     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client
+     * @param \Wilkques\Http\CurlHandle|\Wilkques\Http\Client $client
      * 
      * @return string
      */
-    public function content($channel)
+    public function content($client)
     {
-        return curl_multi_getcontent($channel->getCurlHandle());
+        return curl_multi_getcontent($client->getCurlHandle());
     }
 
     /**

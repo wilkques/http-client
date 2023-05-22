@@ -17,6 +17,8 @@ class Client implements ClientInterface
     private $options = [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
     ];
 
     /** @var array */

@@ -168,31 +168,44 @@ use Wilkques\Http\Http;
     ```php
     $response = \Wilkques\Http\Http::Pool(function ($pool) {
         return [
-            $pool->get('http://example.com/get', ['test' => 123]),
-            $pool->post('http://example.com/post', ['abc' => 123]),
+            $pool->get('http://example.com/get', ['abc' => 123]),
+            $pool->post('http://example.com/post', ['def' => 456]),
+            $pool->as('get')->get('http://example.com/get', ['ghi' => 789]),
+            $pool->as('post')->post('http://example.com/post', ['jkl' => 012]),
         ];
-    });
+    }, [
+        'response'  => [
+            'sort'  => true, // response sort, default true
+        ],
+        'timeout'   => 100, // timeout microseconds suggest < 1 sec, default 100
+        // success
+        'fulfilled' => function (\Wilkques\Http\Response $response, $index) {
+            var_dump($index); // array index
+            var_dump($response); // \Wilkques\Http\Response
+
+            return $response;
+        },
+        // fail
+        'rejected' => function (\Wilkques\Http\Exceptions\CurlExecutionException $exception, $index) {
+            var_dump($index); // array index
+            var_dump($exception); // \Wilkques\Http\Exceptions\CurlExecutionException
+
+            return $response;
+        }
+    ]);
 
     // output
     // array(
     //    Wilkques\Http\Response...,
     //    Wilkques\Http\Response...,
-    // )
-    var_dump($response);
-
-    // or
-
-    $response = \Wilkques\Http\Http::Pool(function ($pool) {
-        return [
-            $pool->as('get')->get('http://example.com/get', ['test' => 123]),
-            $pool->as('post')->post('http://example.com/post', ['abc' => 123]),
-        ];
-    });
-
-    // output
-    // array(
     //    'get'     => Wilkques\Http\Response...,
     //    'post'    => Wilkques\Http\Response...,
     // )
     var_dump($response);
+
+    $response[0]->failed();
+
+    $response[1]->successful();
+
+    // etc ...
     ```

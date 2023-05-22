@@ -9,6 +9,9 @@
         "ext-curl":"*"
     },
     "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
         "psr-4": {
             "Wilkques\\Http\\": "src/"
         }

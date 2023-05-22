@@ -117,12 +117,14 @@ class CurlHandle
 
     /**
      * Gets information about the last transfer.
+     * 
+     * @param int|null $option
      *
-     * @return array
+     * @return mixed
      */
-    public function getInfo()
+    public function getInfo(int $option = null)
     {
-        return curl_getinfo($this->getCurlHandle());
+        return curl_getinfo($this->getCurlHandle(), $option);
     }
 
     /**
