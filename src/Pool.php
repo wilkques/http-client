@@ -130,7 +130,7 @@ class Pool
      * 
      * @return static
      */
-    protected function setOptions(array $options)
+    protected function setOptions(array $options = [])
     {
         if ($options) {
             foreach ($options as $key => $option) {
