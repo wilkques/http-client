@@ -125,7 +125,12 @@ class Pool
         return $response;
     }
 
-    protected function setOptions($options)
+    /**
+     * @param array $options
+     * 
+     * @return static
+     */
+    protected function setOptions(array $options)
     {
         if ($options) {
             foreach ($options as $key => $option) {
