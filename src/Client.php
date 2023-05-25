@@ -11,7 +11,7 @@ class Client implements ClientInterface
     private $headers = [];
 
     /** @var CurlHandle */
-    private $curl;
+    private $handle;
 
     /** @var array */
     private $options = [
@@ -30,8 +30,10 @@ class Client implements ClientInterface
     /**
      * CurlHTTPClient constructor.
      */
-    public function __construct()
+    public function __construct(CurlHandle $handle = null)
     {
+        $handle && $this->setHandle($handle);
+
         $this->asJson()->acceptJson();
     }
 
@@ -46,23 +48,23 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param Curl $curl
+     * @param CurlHandle $handle
      * 
      * @return static
      */
-    public function setCurl(CurlHandle $curl)
+    public function setHandle(CurlHandle $handle)
     {
-        $this->curl = $curl;
+        $this->handle = $handle;
 
         return $this;
     }
 
     /**
-     * @return Curl
+     * @return CurlHandle
      */
-    public function getCurl()
+    public function getHandle()
     {
-        return $this->curl;
+        return $this->handle;
     }
 
     /**
@@ -354,9 +356,9 @@ class Client implements ClientInterface
             case 'application/x-www-form-urlencoded; charset=utf-8':
                 return http_build_query($fields);
                 break;
-                // case 'application/json; charset=utf-8':
-                //     $fields = json_encode($fields);
-                //     break;
+            // case 'application/json; charset=utf-8':
+            //     $fields = json_encode($fields);
+            //     break;
             default:
                 return $fields;
                 break;
@@ -499,7 +501,7 @@ class Client implements ClientInterface
      */
     public function newCurl()
     {
-        return $this->getCurl() ?: $this->setCurl(new CurlHandle)->setClient($this);
+        return $this->getHandle() ?: $this->setHandle(new CurlHandle)->setClient($this);
     }
 
     /**
