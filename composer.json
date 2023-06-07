@@ -6,12 +6,10 @@
     "require": {
         "php": ">=7.0",
         "ext-json": "*",
-        "ext-curl":"*"
+        "ext-curl":"*",
+        "wilkques/php-helper": "^1.0.0"
     },
     "autoload": {
-        "files": [
-            "src/helpers.php"
-        ],
         "psr-4": {
             "Wilkques\\Http\\": "src/"
         }
