@@ -115,7 +115,7 @@ class Pool
         $options = $this->getOptions();
 
         $response = $this->setOptions(
-            array_take_off_recursive($options, 'options')
+            array_take_off_recursive($options, 'options', [])
         )->addHandle($callback($this))->mulitExec()->response();
 
         if ($this->sort) {
