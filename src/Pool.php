@@ -80,7 +80,7 @@ class Pool
      */
     protected function options(array $options = [])
     {
-        $options = array_merge_recursive_distinct($this->options, $options);
+        $options = array_merge_distinct_recursive($this->options, $options);
 
         $this->timeout = array_take_off_recursive($options, 'timeout');
 
