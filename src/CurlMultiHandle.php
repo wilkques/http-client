@@ -87,12 +87,16 @@ class CurlMultiHandle
     }
 
     /**
-     * @param int|null $queue
+     * @param int|null &$queue
      * 
      * @return array|false
      */
-    public function getInfo(int $queue = null)
+    public function getInfo(int &$queue = null)
     {
+        if (!$queue) {
+            return curl_multi_info_read($this->getCurlMultiHandle());
+        }
+
         return curl_multi_info_read($this->getCurlMultiHandle(), $queue);
     }
 

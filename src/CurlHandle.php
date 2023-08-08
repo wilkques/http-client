@@ -124,6 +124,10 @@ class CurlHandle
      */
     public function getInfo(int $option = null)
     {
+        if (!$option) {
+            return curl_getinfo($this->getCurlHandle());
+        }
+
         return curl_getinfo($this->getCurlHandle(), $option);
     }
 
