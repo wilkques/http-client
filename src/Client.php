@@ -266,6 +266,16 @@ class Client implements ClientInterface
     }
 
     /**
+     * @param string|int $key
+     * 
+     * @return mixed|null
+     */
+    public function getOption($key)
+    {
+        return $this->options[$key] ?? null;
+    }
+
+    /**
      * @return static
      */
     public function acceptJson()
@@ -282,11 +292,9 @@ class Client implements ClientInterface
      */
     private function customRequest(string $method)
     {
-        $this->setOptions([
+        return $this->setOptions([
             CURLOPT_CUSTOMREQUEST => $method,
         ]);
-
-        return $this;
     }
 
     /**
@@ -294,11 +302,9 @@ class Client implements ClientInterface
      */
     private function methodGet()
     {
-        $this->setOptions([
+        return $this->setOptions([
             CURLOPT_HTTPGET => true
         ]);
-
-        return $this;
     }
 
     /**
@@ -306,11 +312,9 @@ class Client implements ClientInterface
      */
     private function methodPost()
     {
-        $this->setOptions([
+        return $this->setOptions([
             CURLOPT_POST => true
         ]);
-
-        return $this;
     }
 
     /**
@@ -318,11 +322,9 @@ class Client implements ClientInterface
      */
     private function methodPut()
     {
-        $this->setOptions([
+        return $this->setOptions([
             CURLOPT_PUT => true
         ]);
-
-        return $this;
     }
 
     /**
@@ -332,7 +334,7 @@ class Client implements ClientInterface
     {
         $headers = $this->getHeaders();
 
-        $this->setOptions([
+        return $this->setOptions([
             CURLOPT_HTTPHEADER => array_map(function ($item, $index) {
                 if (is_string($index)) {
                     return "{$index}: {$item}";
@@ -341,8 +343,6 @@ class Client implements ClientInterface
                 return $item;
             }, $headers, array_keys($headers))
         ]);
-
-        return $this;
     }
 
     /**
@@ -360,9 +360,7 @@ class Client implements ClientInterface
      */
     private function postFields($fields)
     {
-        $this->setOptions([CURLOPT_POSTFIELDS => $this->fieldsEncode($fields)]);
-
-        return $this;
+        return $this->setOptions([CURLOPT_POSTFIELDS => $this->fieldsEncode($fields)]);
     }
 
     /**
@@ -431,8 +429,8 @@ class Client implements ClientInterface
      */
     private function fileClose()
     {
-        if (isset($this->getOptions()[CURLOPT_INFILE])) {
-            fclose($this->getOptions()[CURLOPT_INFILE]);
+        if ($cURLFile = $this->getOption(CURLOPT_INFILE)) {
+            fclose($cURLFile);
         }
 
         if ($files = $this->getFiles()) {
@@ -467,34 +465,34 @@ class Client implements ClientInterface
 
     /**
      * @param string $method
-     * @param string|array|null $reqBody
+     * @param string|array|null $requestBody
      * 
      * @return static cUrl options
      */
-    private function options(string $method, $reqBody = null)
+    private function options(string $method, $requestBody = null)
     {
         $this->customRequest($method)->setHeaders();
 
-        if (is_null($reqBody)) {
+        if (is_null($requestBody)) {
             return $this->noContentLength();
         }
 
-        return $this->postFields(array_replace_recursive($reqBody, $this->getFiles()));
+        return $this->postFields(array_replace_recursive($requestBody, $this->getFiles()));
     }
 
     /**
      * @param string $method
      * @param string $url
-     * @param string|array|null $reqBody
+     * @param string|array|null $requestBody
      * 
      * @throws CurlExecutionException
      * 
      * @return Response
      */
-    private function sendRequest(string $method, string $url, $reqBody = null)
+    private function sendRequest(string $method, string $url, $requestBody = null)
     {
         $this->setUrl($url)->init()->setoptArray(
-            $this->options($method, $reqBody)->getOptions()
+            $this->options($method, $requestBody)->getOptions()
         );
 
         if ($this->async) {
