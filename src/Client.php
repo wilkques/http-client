@@ -318,8 +318,16 @@ class Client implements ClientInterface
      */
     private function setHeaders()
     {
+        $headers = $this->getHeaders();
+
         $this->setOptions([
-            CURLOPT_HTTPHEADER => $this->getHeaders()
+            CURLOPT_HTTPHEADER => array_map(function ($item, $index) {
+                if (is_string($index)) {
+                    return "{$index}: {$item}";
+                }
+
+                return $item;
+            }, $headers, array_keys($headers))
         ]);
 
         return $this;
