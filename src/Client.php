@@ -290,7 +290,7 @@ class Client implements ClientInterface
      * 
      * @return static
      */
-    private function customRequest(string $method)
+    private function httpMethod(string $method)
     {
         return $this->setOptions([
             CURLOPT_CUSTOMREQUEST => $method,
@@ -330,7 +330,7 @@ class Client implements ClientInterface
     /**
      * @return static
      */
-    private function setHeaders()
+    private function buildHeaders()
     {
         $headers = $this->getHeaders();
 
@@ -374,9 +374,9 @@ class Client implements ClientInterface
             case 'application/x-www-form-urlencoded; charset=utf-8':
                 return http_build_query($fields);
                 break;
-            // case 'application/json; charset=utf-8':
-            //     $fields = json_encode($fields);
-            //     break;
+                // case 'application/json; charset=utf-8':
+                //     $fields = json_encode($fields);
+                //     break;
             default:
                 return $fields;
                 break;
@@ -464,15 +464,12 @@ class Client implements ClientInterface
     }
 
     /**
-     * @param string $method
      * @param string|array|null $requestBody
      * 
      * @return static cUrl options
      */
-    private function options(string $method, $requestBody = null)
+    private function buildRequestBody($requestBody = null)
     {
-        $this->customRequest($method)->setHeaders();
-
         if (is_null($requestBody)) {
             return $this->noContentLength();
         }
@@ -491,9 +488,14 @@ class Client implements ClientInterface
      */
     private function sendRequest(string $method, string $url, $requestBody = null)
     {
-        $this->setUrl($url)->init()->setoptArray(
-            $this->options($method, $requestBody)->getOptions()
-        );
+        $this->setUrl($url)
+            ->httpMethod($method)
+            ->buildHeaders()
+            ->buildRequestBody($requestBody)
+            ->init()
+            ->setoptArray(
+                $this->getOptions()
+            );
 
         if ($this->async) {
             return $this;
