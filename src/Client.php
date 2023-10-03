@@ -86,7 +86,7 @@ class Client implements ClientInterface
      */
     public function withToken(string $token, string $type = 'Bearer')
     {
-        return $this->withHeaders([sprintf("Authorization: %s", trim("$type $token"))]);
+        return $this->withHeaders([sprintf("Authorization: %s", trim("{$type} {$token}"))]);
     }
 
     /**
