@@ -38,6 +38,18 @@ class Client implements ClientInterface
     }
 
     /**
+     * @param string $url
+     * 
+     * @return static
+     */
+    public function setUrl(string $url)
+    {
+        return $this->setOptions([
+            CURLOPT_URL => $url,
+        ]);
+    }
+
+    /**
      * @return static
      */
     public function async()

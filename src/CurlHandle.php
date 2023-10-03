@@ -10,39 +10,8 @@ class CurlHandle
     /** @var \CurlHandle */
     private $curlHandle;
 
-    /** @var string */
-    private $url;
-
     /** @var Client */
     private $client;
-
-    /**
-     * @param string $url
-     */
-    public function __construct(string $url = '')
-    {
-        $this->setUrl($url);
-    }
-
-    /**
-     * @param string $url
-     * 
-     * @return static
-     */
-    public function setUrl(string $url)
-    {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
-    }
 
     /**
      * @param \CurlHandle|boolean $curlHandle
@@ -69,7 +38,7 @@ class CurlHandle
      */
     public function init()
     {
-        return $this->setCurlHandle(curl_init($this->getUrl()));
+        return $this->setCurlHandle(curl_init());
     }
 
     /**
