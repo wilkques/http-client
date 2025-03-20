@@ -91,7 +91,7 @@ class CurlHandle
      *
      * @return mixed
      */
-    public function getInfo(int $option = null)
+    public function getInfo(?int $option = null)
     {
         if (!$option) {
             return curl_getinfo($this->getCurlHandle());

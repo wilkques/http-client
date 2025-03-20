@@ -2,6 +2,7 @@
 
 namespace Wilkques\Http;
 
+use Wilkques\Helpers\Arrays;
 use Wilkques\Http\Exceptions\CurlExecutionException;
 use Wilkques\Http\Exceptions\CurlMultiExecutionException;
 
@@ -17,28 +18,16 @@ class Pool
     protected $pool;
 
     /** @var array */
-    protected $options;
+    protected $options = [];
 
-    /** @var float */
-    protected $timeout = 100.0;
-
-    /** @var bool */
-    protected $sort = true;
-
-    /**
-     * construct
-     */
     public function __construct()
     {
         $this->boot();
     }
 
-    /**
-     * init
-     */
     public function boot()
     {
-        $this->options = [
+        return $this->setOptions([
             'response'  => [
                 'sort'  => true
             ],
@@ -52,9 +41,7 @@ class Pool
             'runtimeRejected' => function (CurlMultiExecutionException $e) {
                 return $e;
             }
-        ];
-
-        return $this;
+        ]);
     }
 
     /**
@@ -78,15 +65,22 @@ class Pool
      * 
      * @return static
      */
-    protected function options(array $options = [])
+    public function setOptions(array $options)
     {
-        $options = array_merge_distinct_recursive($this->options, $options);
+        $this->options = array_replace_recursive($this->getOptions(), $options);
 
-        $this->timeout = array_take_off_recursive($options, 'timeout');
+        return $this;
+    }
 
-        $this->sort = array_take_off_recursive($options, 'response.sort', true);
-
-        $this->options = $options;
+    /**
+     * @param int $curlOpt CURLOPT
+     * @param mixed $value
+     * 
+     * @return static
+     */
+    public function setOption($curlOpt, $value)
+    {
+        Arrays::set($this->options, $curlOpt, $value);
 
         return $this;
     }
@@ -102,23 +96,148 @@ class Pool
     }
 
     /**
-     * @param callable $callback
+     * @param string|int $curlOpt CURLOPT
+     * @param mixed|null $default
+     * 
+     * @return mixed|null
+     */
+    public function getOption($curlOpt, $default = null)
+    {
+        return Arrays::get($this->options, $curlOpt, $default);
+    }
+
+    /**
+     * @param int $curlOpt CURLOPT
+     * @param mixed $value
+     * 
+     * @return static
+     */
+    public function setCurlMultiOption($curlOpt, $value)
+    {
+        return $this->setOption("curl_multi_options.{$curlOpt}", $value);
+    }
+
+    /**
+     * @param mixed|[] $default
+     * 
+     * @return array
+     */
+    public function getCurlMultiOptions($default = [])
+    {
+        return $this->getOption("curl_multi_options", $default);
+    }
+
+    /**
+     * @param int $curlOpt CURLOPT
+     * @param mixed|[] $default
+     * 
+     * @return array
+     */
+    public function getCurlMultiOption($curlOpt, $default = [])
+    {
+        return $this->getOption("curl_multi_options.{$curlOpt}", $default);
+    }
+
+    /**
+     * @param int $curlOpt CURLOPT
+     * @param mixed $value
+     * 
+     * @return static
+     */
+    public function setCurlOption($curlOpt, $value)
+    {
+        return $this->setOption("curl_options.{$curlOpt}", $value);
+    }
+
+    /**
+     * @param mixed|[] $default
+     * 
+     * @return array
+     */
+    public function getCurlOptions($default = [])
+    {
+        return $this->getOption("curl_options", $default);
+    }
+
+    /**
+     * @param int $curlOpt CURLOPT
+     * @param mixed|[] $default
+     * 
+     * @return array
+     */
+    public function getCurlOption($curlOpt, $default = [])
+    {
+        return $this->getOption("curl_options.{$curlOpt}", $default);
+    }
+
+    /**
+     * @param bool|true $default
+     * 
+     * @return bool|true
+     */
+    public function getResponseOptionSort($default = true)
+    {
+        return $this->getOption("response.sort", $default);
+    }
+
+    /**
+     * @param float $default
+     * 
+     * @return float
+     */
+    public function getTimeOut($default = 100)
+    {
+        return $this->getOption("timeout", $default);
+    }
+
+    /**
+     * @return callback|\Closure
+     */
+    public function getRuntimeRejected()
+    {
+        return $this->getOption("runtimeRejected");
+    }
+
+    /**
+     * @return callback|\Closure
+     */
+    public function getFulfilled()
+    {
+        return $this->getOption("fulfilled");
+    }
+
+    /**
+     * @return callback|\Closure
+     */
+    public function getRejected()
+    {
+        return $this->getOption("rejected");
+    }
+
+    /**
+     * @param callable|array|null $pool
      * @param array $options
      * 
      * @return array
      */
-    public function pool($callback, array $options = [])
+    public function pool($pool = null, array $options = [])
     {
         // init
-        $this->options($options)->newMultiHandle()->init();
+        $this->setOptions($options)->newMultiHandle()->init();
 
-        $options = $this->getOptions();
+        if (is_callable($pool)) {
+            $pool = $pool($this);
+        }
 
-        $response = $this->setOptions(
-            array_take_off_recursive($options, 'options', [])
-        )->addHandle($callback($this))->mulitExec()->response();
+        if (is_null($pool)) {
+            $pool = $this->pool;
+        }
 
-        if ($this->sort) {
+        $response = $this->curlMultiOptions(
+            $this->getCurlMultiOptions()
+        )->addHandle($pool)->mulitExec()->response();
+
+        if ($this->getResponseOptionSort()) {
             $response = array_replace($this->pool, $response);
         }
 
@@ -130,12 +249,10 @@ class Pool
      * 
      * @return static
      */
-    protected function setOptions(array $options = [])
+    protected function curlMultiOptions(array $options = [])
     {
-        if ($options) {
-            foreach ($options as $key => $option) {
-                $this->handle->setOpt($key, $option);
-            }
+        foreach ($options as $key => $option) {
+            $this->handle->setOpt($key, $option);
         }
 
         return $this;
@@ -149,6 +266,10 @@ class Pool
     protected function addHandle($pool)
     {
         foreach ($pool as $client) {
+            $client->setOptions(
+                $this->getCurlOptions()
+            );
+
             $this->getHandle()->addHandle($client);
 
             $client->close();
@@ -162,26 +283,24 @@ class Pool
      */
     protected function mulitExec()
     {
-        $timeout = $this->timeout;
-
         $handle = $this->getHandle();
 
-        $runtimeRejected = array_take_off_recursive($this->options, 'runtimeRejected');
+        $runtimeRejected = $this->getRuntimeRejected();
 
         $active = null;
 
         do {
-            if ($active && $handle->select($timeout) === -1) {
+            if ($active && $handle->select($this->getTimeOut()) === -1) {
                 $exceptionStr = ($mrc = $handle->errorno()) ? $handle->error($mrc) : 'system select failed';
 
-                $rejected = $runtimeRejected(new \Wilkques\Http\Exceptions\CurlMultiExecutionException($exceptionStr));
+                $rejected = $runtimeRejected(new CurlMultiExecutionException($exceptionStr));
 
                 if ($rejected instanceof \Exception) {
                     throw $rejected;
                 }
                 // Perform a usleep if a select returns -1.
                 // See: https://bugs.php.net/bug.php?id=61141
-                usleep($timeout);
+                usleep($this->getTimeOut());
             }
 
             while ($handle->exec($active) === CURLM_CALL_MULTI_PERFORM);
@@ -222,7 +341,7 @@ class Pool
             // pool key
             $key = array_search($done['handle'], $pool);
 
-            $client = $client->setCurlHandle($done['handle']);
+            $client = $client->getHandle()->setCurlHandle($done['handle']);
 
             $handle->removeHandle($client);
 
@@ -241,11 +360,9 @@ class Pool
      */
     protected function response()
     {
-        $options = $this->getOptions();
+        $fulfilled = $this->getFulfilled();
 
-        $fulfilled = array_take_off_recursive($options, 'fulfilled');
-
-        $rejected = array_take_off_recursive($options, 'rejected');
+        $rejected = $this->getRejected();
 
         return $this->clientHandle($fulfilled, $rejected);
     }
@@ -262,7 +379,8 @@ class Pool
      * Add a request to the pool with a key.
      *
      * @param  string  $key
-     * @return static
+     * 
+     * @return Client
      */
     public function as(string $key)
     {
@@ -295,10 +413,10 @@ class Pool
      * 
      * @return mixed
      */
-    public function __call(string $method, array $arguments)
-    {
-        return $this->pool[] = $this->asyncRequest()->$method(...$arguments);
-    }
+    // public function __call(string $method, array $arguments)
+    // {
+    //     return $this->pool[] = $this->asyncRequest()->$method(...$arguments);
+    // }
 
     /**
      * destruct

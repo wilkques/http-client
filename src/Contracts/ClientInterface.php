@@ -27,7 +27,7 @@ interface ClientInterface
      * 
      * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function post(string $url, array $data = [], array $query = null);
+    public function post(string $url, array $data = [], ?array $query = null);
 
     /**
      * Sends DELETE request to API.
@@ -52,7 +52,7 @@ interface ClientInterface
      * 
      * @throws \Wilkques\HttpClient\Exceptions\CurlExecutionException
      */
-    public function put(string $url, array $data = [], array $query = null);
+    public function put(string $url, array $data = [], ?array $query = null);
 
     /**
      * Sends PATCH request to API.
@@ -125,5 +125,5 @@ interface ClientInterface
      * 
      * @return static
      */
-    public function attach($name, string $filePath = '', string $mimeType = null, string $reName = null);
+    public function attach($name, string $filePath = '', ?string $mimeType = null, ?string $reName = null);
 }

@@ -16,6 +16,15 @@ use Wilkques\Http\Http;
 
 ## Methods
 
+1. `setCurlOption`
+    ```php
+    $response = Http::setCurlOption(<CURL OPTION>, <Value>);
+
+        // Ex
+
+    $response = Http::setCurlOption(CURLOPT_TIMEOUT, 100);
+    ```
+
 1. `withHeaders`
 
     ```php
@@ -23,7 +32,9 @@ use Wilkques\Http\Http;
 
     // Ex
 
-    $response = Http::withHeaders([ CURLOPT_TIMEOUT => 100 ]);
+    $response = Http::withHeaders([
+        'Accept' => 'application/json; charset=utf-8'
+    ]);
     ```
 
 1. `asForm`

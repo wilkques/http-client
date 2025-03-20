@@ -24,12 +24,87 @@ class Http
     /** @var Client */
     protected $client;
 
+    /** @var Pool */
+    protected $pool;
+
     /**
-     * @return mixed
+     * @param Client|null $client
+     * @param Pool|null $pool
+     */
+    public function __construct(?Client $client = null, ?Pool $pool = null)
+    {
+        $this->setClient($client)->setPool($pool);
+    }
+
+    /**
+     * @param Client|null $client
+     * @param Pool|null $pool
+     * 
+     * @return static
+     */
+    public static function make(?Client $client = null, ?Pool $pool = null)
+    {
+        return new static($client, $pool);
+    }
+
+    /**
+     * @return static
+     */
+    public function setClient(?Client $client = null)
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
+
+    /**
+     * @return Client
      */
     public function newClient()
     {
-        return $this->client = $this->client ?? new Client;
+        if (!$this->getClient()) {
+            $this->setClient(new Client);
+        }
+
+        return $this->getClient();
+    }
+
+    /**
+     * @return static
+     */
+    public function setPool(?Pool $pool = null)
+    {
+        $this->pool = $pool;
+
+        return $this;
+    }
+
+    /**
+     * @return Pool
+     */
+    public function getPool()
+    {
+        return $this->pool;
+    }
+
+    /**
+     * @return Pool
+     */
+    public function newPool()
+    {
+        if (!$this->getPool()) {
+            $this->setPool(new Pool);
+        }
+
+        return $this->getPool();
     }
 
     /**
@@ -44,7 +119,7 @@ class Http
             return $this->newClient()->$method(...$arguments);
         }
 
-        return (new Pool)->$method(...$arguments);
+        return $this->newPool()->$method(...$arguments);
     }
 
     /**

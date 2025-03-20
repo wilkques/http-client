@@ -2,6 +2,7 @@
 
 namespace Wilkques\Http;
 
+use Wilkques\Helpers\Arrays;
 use Wilkques\Http\Exceptions\RequestException;
 
 /**
@@ -11,8 +12,10 @@ class Response implements \JsonSerializable, \ArrayAccess
 {
     /** @var int */
     private $httpStatus;
+
     /** @var string */
     private $body;
+
     /** @var string[] */
     private $headers;
 
@@ -22,7 +25,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      * @param string|null $result
      * @param array|null $info
      */
-    public function __construct(string $result = null, array $info = [])
+    public function __construct(?string $result = null, array $info = [])
     {
         $this->response($result, $info);
     }
@@ -32,7 +35,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      * 
      * @return static
      */
-    protected function response(string $result = null, array $info = [])
+    protected function response(?string $result = null, array $info = [])
     {
         [
             'http_code'     => $httpStatus,
@@ -53,9 +56,12 @@ class Response implements \JsonSerializable, \ArrayAccess
     protected function responseHeaders(string $result, int $responseHeaderSize)
     {
         $responseHeaderStr = substr($result, 0, $responseHeaderSize);
+
         $responseHeaders = [];
+
         foreach (explode("\r\n", $responseHeaderStr) as $responseHeader) {
             $kv = explode(':', $responseHeader, 2);
+
             if (count($kv) === 2) {
                 $responseHeaders[$kv[0]] = trim($kv[1]);
             }
@@ -93,12 +99,16 @@ class Response implements \JsonSerializable, \ArrayAccess
     public function throw($throw = null)
     {
         if ($this->failed()) {
-            if ($throw && is_callable($throw)) {
-                throw $this->callableReturnCheck($throw($this, $this->getThrows()));
+            if (is_callable($throw) || $throw instanceof \Closure) {
+                throw $this->returnExceptionCheck($throw($this, $this->getThrows()));
             }
-            
-            if ($throw && $throw instanceof \Exception) {
+
+            if ($throw instanceof \Exception) {
                 throw $throw;
+            }
+
+            if ($throw) {
+                throw $this->returnExceptionCheck($throw);
             }
 
             throw $this->getThrows();
@@ -114,10 +124,12 @@ class Response implements \JsonSerializable, \ArrayAccess
      * 
      * @return mixed
      */
-    protected function callableReturnCheck($callable = null)
+    protected function returnExceptionCheck($callable = null)
     {
-        if (is_null($callable)) return $this->getThrows();
-        else if (!is_object($callable)) throw new \UnexpectedValueException("throw return must be Exception Object");
+        if (is_null($callable))
+            return $this->getThrows();
+        else if (!$callable instanceof \Exception)
+            return new \UnexpectedValueException("throw return must be Exception");
 
         return $callable;
     }
@@ -301,7 +313,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->json();
     }
@@ -313,7 +325,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->json()[$offset];
     }
@@ -323,8 +335,10 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @param  mixed  $offset
      * @param  mixed  $value
+     * 
+     * @return void
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->json()[$offset] = $value;
     }
@@ -336,9 +350,9 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
-        return !array_key_exists($offset, $this->json()) && !is_null($this->json()[$offset]);
+        return Arrays::has($this->json(), $offset);
     }
 
     /**
@@ -346,7 +360,7 @@ class Response implements \JsonSerializable, \ArrayAccess
      *
      * @param  mixed  $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->json()[$offset]);
     }
