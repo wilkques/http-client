@@ -37,6 +37,16 @@ use Wilkques\Http\Http;
     ]);
     ```
 
+1. `setHeader`
+
+    ```php
+    $response = Http::setHeader('<header>', '<value>'); // add header
+
+    // Ex
+
+    $response = Http::setHeader('Accept', 'application/json; charset=utf-8');
+    ```
+
 1. `asForm`
 
     ```php
