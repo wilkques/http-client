@@ -4,10 +4,10 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": ">=8.2",
         "ext-json": "*",
         "ext-curl": "*",
-        "wilkques/php-helper": ">=4.0.0"
+        "wilkques/php-helper": "^5.0.0"
     },
     "autoload": {
         "psr-4": {

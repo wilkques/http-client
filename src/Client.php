@@ -87,18 +87,22 @@ class Client implements ClientInterface
      */
     public function withToken(string $token, string $type = 'Bearer')
     {
-        return $this->withHeaders([sprintf("Authorization: %s", trim("{$type} {$token}"))]);
+        return $this->setHeader('Authorization', "{$type} {$token}");
     }
 
     /**
      * @param string $url
-     * @param array $data
+     * @param array|[] $data
      * 
      * @return string
      */
-    protected function urlBuilder(string $url, $data)
+    protected function urlBuilder(string $url, $data = [])
     {
-        return $data ? $url .= '?' . http_build_query($data, '', '&', PHP_QUERY_RFC3986) : $url;
+        if (!empty($data)) {
+            $url .= '?' . http_build_query($data, '', '&', PHP_QUERY_RFC3986);
+        }
+
+        return $url;
     }
 
     /**
@@ -181,18 +185,6 @@ class Client implements ClientInterface
     }
 
     /**
-     * Specify the request's content type.
-     *
-     * @param  string  $contentType
-     * 
-     * @return static
-     */
-    public function contentType(string $contentType)
-    {
-        return $this->withHeaders(['Content-Type' => $contentType]);
-    }
-
-    /**
      * @param array $headers
      * 
      * @return static
@@ -202,6 +194,17 @@ class Client implements ClientInterface
         $this->headers = array_replace_recursive($this->getHeaders(), $headers);
 
         return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * 
+     * @return array
+     */
+    public function setHeader(string $key, $value)
+    {
+        return $this->withHeaders([$key => $value]);
     }
 
     /**
@@ -219,7 +222,19 @@ class Client implements ClientInterface
      */
     public function getHeader(string $key)
     {
-        return $this->getHeaders()[$key];
+        return Arrays::get($this->getHeaders(), $key);
+    }
+
+    /**
+     * Specify the request's content type.
+     *
+     * @param  string  $contentType
+     * 
+     * @return static
+     */
+    public function contentType(string $contentType)
+    {
+        return $this->setHeader('Content-Type', $contentType);
     }
 
     /**
@@ -324,9 +339,7 @@ class Client implements ClientInterface
      */
     public function acceptJson()
     {
-        return $this->withHeaders([
-            'Accept' => 'application/json; charset=utf-8'
-        ]);
+        return $this->setHeader('Accept', 'application/json; charset=utf-8');
     }
 
     /**
@@ -384,7 +397,7 @@ class Client implements ClientInterface
      */
     private function noContentLength()
     {
-        return $this->withHeaders(['Content-Length' => '0']);
+        return $this->setHeader('Content-Length', '0');
     }
 
     /**

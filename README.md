@@ -16,7 +16,7 @@ use Wilkques\Http\Http;
 
 ## Methods
 
-1. `setCurlOption`
+1. `setCurlOption` PHP CURL Setting
     ```php
     $response = Http::setCurlOption(<CURL OPTION>, <Value>);
 
